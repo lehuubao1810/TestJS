@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sub_Page Test JS</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="nav">
+        <a class="nav-item" href="#">Home</a>
+        <a class="nav-item" href="#">About</a>
+
+        <div class="item-parent">
+          <a class="nav-item" href="#">Tutorial</a>
+          <nav class="sub-nav">
+            <a class="nav-item" href="#">Thủ thuật</a>
+            <a class="nav-item" href="#">Kiến thức</a>
+
+            <div class="item-parent">
+              <a class="nav-item" href="#">Đồ họa </a>
+              <nav class="sub-nav child-lv2">
+                <a class="nav-item" href="#">Audition</a>
+                <a class="nav-item" href="#">Illustrator</a>
+                <a class="nav-item" href="#">PhotoShop</a>
+                <a class="nav-item" href="#">After Effect</a>
+                <a class="nav-item" href="#">Premiere</a>
+              </nav>
+            </div>
+
+            <a class="nav-item" href="#">Lập trình</a>
+          </nav>
+        </div>
+
+        <a class="nav-item" href="#">Contact</a>
+        <a class="nav-item" href="#">Login</a>
+      </nav>
+    </header>
+
+    <script>
+      const navItems = document.querySelectorAll(".nav-item");
+      const subNavs = document.querySelectorAll(".sub-nav");
+      const itemParents = document.querySelectorAll(".item-parent");
+
+      const navItemActive = {
+        index: null,
+        lvChild: null,
+      };
+
+      const handleSaveLocalStorage = (value) => {
+        localStorage.setItem("navItemActive", JSON.stringify(value));
+      };
+
+      const handleGetLocalStorage = () => {
+        const navItemActive = JSON.parse(localStorage.getItem("navItemActive"));
+        if (navItemActive) {
+          navItemActive.index != null &&
+            navItems[navItemActive.index].classList.add("active");
+          if (navItemActive.lvChild != null) {
+            for (let i = 0; i < navItemActive.lvChild + 1; i++) {
+              itemParents[i].classList.add("active");
+            }
+          }
+        }
+      };
+
+      handleGetLocalStorage();
+
+      const isChildOf = (child, parent) => {
+        return parent.contains(child);
+      };
+
+      const checkLvChild = (child, parent) => {
+        let index = null;
+        parent.forEach((item, i) => {
+          if (isChildOf(child, item)) {
+            index = i;
+          }
+        });
+        return index;
+      };
+
+      const handleSwitchPage = (url) => {
+        window.location.href = url;
+      };
+
+      navItems.forEach((navItem, index) => {
+        navItem.addEventListener("click", () => {
+          // delete all active class
+          navItems.forEach((navItem) => {
+            navItem.classList.remove("active");
+          });
+          itemParents.forEach((itemParent) => {
+            itemParent.classList.remove("active");
+          });
+          navItem.classList.add("active");
+
+          handleSwitchPage("/");
+          navItemActive.index = index;
+          navItemActive.lvChild = checkLvChild(navItem, subNavs);
+          handleSaveLocalStorage(navItemActive);
+          console.dir(navItem);
+          console.log(navItem.parentNode.classList);
+          console.log(checkLvChild(navItem, subNavs));
+
+          if (checkLvChild(navItem, subNavs) != null) {
+            for (let i = 0; i < checkLvChild(navItem, subNavs) + 1; i++) {
+              itemParents[i].classList.add("active");
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
